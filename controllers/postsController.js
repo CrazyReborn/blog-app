@@ -15,7 +15,7 @@ exports.post_new_get = (req, res) => {
 exports.post_new_post = [
     body('text', 'Post should not be empty').trim().isLength({min:1}).escape(),
     verifyToken,
-    (req, res, next) => {
+    (req, res) => {
         const errors = validationResult(req);
 
         const post = new Post({
@@ -43,7 +43,7 @@ exports.post_new_post = [
     }
 ]
 
-exports.post_update_get = (req, res) => {
+exports.post_get = (req, res) => {
     Post.findById(req.params.id).exec((err, post) => {
         if (err) {
             res.send(err);
@@ -57,7 +57,7 @@ exports.post_update_get = (req, res) => {
     })
 }
 
-exports.post_update_put = [
+exports.post_put = [
     body('text', 'Post should not be empty').trim().isLength({min:1}).escape(),
     verifyToken,
     (req, res) => {
@@ -74,11 +74,17 @@ exports.post_update_put = [
         }
         else {
             Post.findByIdAndUpdate(req.params.id, post, {})
-            .then(updatedPost => res.redirect('/'))
+            .then(() => res.redirect('/'))
             .catch(err => res.json({err}));
         }
     }
 ]
+
+exports.post_delete = (req, res) => {
+    Post.findByIdAndRemove(req.params.id)
+    .then(() => res.redirect('/'))
+    .catch(err => res.json({err}));
+}
 
 function verifyToken(req, res, next) {
     const bearerHeader = req.headers['authorization'];
