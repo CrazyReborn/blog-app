@@ -1,9 +1,10 @@
 const Post = require('../models/post');
 const {body, validationResult} = require('express-validator');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const async = require('async');
 
 exports.post_all_get = (req, res) => {
-    Post.find()
+    Post.find().populate('comments')
     .then(posts => res.json({ posts }))
     .catch(err => console.error(err))
 };
@@ -22,7 +23,8 @@ exports.post_new_post = [
             //need to change to get user id from req object
             author: '61d159657ab36e7f277ee8d1',
             text: req.body.text,
-            date: Date.now()
+            date: Date.now(),
+            comments:[]
         })
 
         if (!errors.isEmpty()) {
