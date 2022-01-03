@@ -1,5 +1,6 @@
 const Post = require('../models/post');
 const {body, validationResult} = require('express-validator');
+const jwt = require('jsonwebtoken')
 
 exports.post_all_get = (req, res) => {
     Post.find()
@@ -13,8 +14,8 @@ exports.post_new_get = (req, res) => {
 
 exports.post_new_post = [
     body('text', 'Post should not be empty').trim().isLength({min:1}).escape(),
-
-    (req, res) => {
+    verifyToken,
+    (req, res, next) => {
         const errors = validationResult(req);
 
         const post = new Post({
@@ -27,10 +28,67 @@ exports.post_new_post = [
         if (!errors.isEmpty()) {
             res.json({ errors })
         } else {
-            post.save()
-            //make it redirect somewhere
-            .then(() => res.json({ message: 'success' }))
-            .catch(err => res.json({err}))
+            jwt.verify(req.token, 'secretKey', (err, authData) => {
+                if (err) {
+                    res.sendStatus(403);
+                } else {
+                    post.save()
+                    //make it redirect somewhere
+                    .then(() => res.json({ message: 'success', authData }))
+                    .catch(err => res.json({err}))
+                }
+            })
+            
         }
     }
 ]
+
+exports.post_update_get = (req, res) => {
+    Post.findById(req.params.id).exec((err, post) => {
+        if (err) {
+            res.send(err);
+        }
+        if (post == null) {
+            res.json({message: 'Can\'t find the post'})
+        }
+        else {
+            res.json({post});
+        }
+    })
+}
+
+exports.post_update_put = [
+    body('text', 'Post should not be empty').trim().isLength({min:1}).escape(),
+    verifyToken,
+    (req, res) => {
+        const errors = validationResult(req);
+
+        const post = new Post({
+            _id: req.params.id,
+            text: req.body.text,
+            date: Date.now()
+        });
+        
+        if (!errors.isEmpty()) {
+            res.json({errors});
+        }
+        else {
+            Post.findByIdAndUpdate(req.params.id, post, {})
+            .then(updatedPost => res.redirect('/'))
+            .catch(err => res.json({err}));
+        }
+    }
+]
+
+function verifyToken(req, res, next) {
+    const bearerHeader = req.headers['authorization'];
+    if (typeof bearerHeader !== 'undefined') {
+        const bearer = bearerHeader.split(' ');
+        const bearerToken = bearer[1];
+        req.token = bearerToken;
+        next();
+    } else {
+        res.sendStatus(403)
+    }
+
+}
