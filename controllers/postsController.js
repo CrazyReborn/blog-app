@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const async = require('async');
 
 exports.post_all_get = (req, res) => {
-    Post.find().populate('comments')
+    Post.find().populate('author').populate('comments')
     .then(posts => res.json({ posts }))
     .catch(err => console.error(err))
 };
