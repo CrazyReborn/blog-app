@@ -45,12 +45,13 @@ exports.post_new_post = [
     }
 ]
 
-exports.post_get = (req, res) => {
-    Post.findById(req.params.id).exec((err, post) => {
+exports.post_get = (req, res, next) => {
+    Post.findById(req.params.id).populate('author').populate('comments')
+    .exec((err, post) => {
         if (err) {
-            res.send(err);
+            next(err)
         }
-        if (post == null) {
+        else if (post === null) {
             res.json({message: 'Can\'t find the post'})
         }
         else {
@@ -76,7 +77,7 @@ exports.post_put = [
         }
         else {
             Post.findByIdAndUpdate(req.params.id, post, {})
-            .then(() => res.redirect('/'))
+            .then(() => res.redirect('/api/'))
             .catch(err => res.json({err}));
         }
     }
