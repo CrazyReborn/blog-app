@@ -28,8 +28,7 @@ exports.comment_post = [
                         if (err) {
                             res.json(err);
                         } else {
-                            res.writeHead(302, { Location: `http://localhost:3000/posts/${req.params.id}` });
-                            res.end();
+                            res.status(200).end();
                         }
                     })
                 }
