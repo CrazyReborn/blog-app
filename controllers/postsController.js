@@ -4,9 +4,17 @@ const jwt = require('jsonwebtoken');
 const async = require('async');
 
 exports.post_all_get = (req, res) => {
-    Post.find().populate('author').populate('comments')
-    .then(posts => res.json({ posts }))
-    .catch(err => console.error(err))
+    jwt.verify(req.token, 'sekretKey', (err, authData) => {
+        if (err) {
+            Post.find({published: true}).populate('author').populate('comments')
+            .then(posts => res.json({ posts }))
+            .catch(err => console.error(err))
+        } else {
+            Post.find().populate('author').populate('comments')
+            .then(posts => res.json({ posts }))
+            .catch(err => console.error(err))
+        }
+    });
 };
 
 exports.post_new_get = (req, res) => {
@@ -22,6 +30,7 @@ exports.post_new_post = [
         const post = new Post({
             //need to change to get user id from req object
             author: '61d159657ab36e7f277ee8d1',
+            title: req.body.title,
             text: req.body.text,
             date: Date.now(),
             comments:[],
