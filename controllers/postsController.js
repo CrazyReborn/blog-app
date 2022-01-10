@@ -24,7 +24,8 @@ exports.post_new_post = [
             author: '61d159657ab36e7f277ee8d1',
             text: req.body.text,
             date: Date.now(),
-            comments:[]
+            comments:[],
+            published: false
         })
 
         if (!errors.isEmpty()) {

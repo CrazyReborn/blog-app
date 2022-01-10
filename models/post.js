@@ -6,7 +6,8 @@ const PostSchema = new Schema({
     title: {type: String, required: true},
     text: {type: String, required: true},
     date: {type: Date},
-    comments: [{type: Schema.Types.ObjectId, ref: 'Comment'}]
+    comments: [{type: Schema.Types.ObjectId, ref: 'Comment'}],
+    published: {type: Boolean}
 });
 
 PostSchema.virtual('url').get(() => {
