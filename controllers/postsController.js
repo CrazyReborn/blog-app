@@ -3,22 +3,30 @@ const {body, validationResult} = require('express-validator');
 const jwt = require('jsonwebtoken');
 const async = require('async');
 
-exports.post_all_get = (req, res) => {
-    jwt.verify(req.token, 'sekretKey', (err, authData) => {
-        if (err) {
-            Post.find({published: true}).populate('author').populate('comments')
-            .then(posts => res.json({ posts }))
-            .catch(err => console.error(err))
-        } else {
-            Post.find().populate('author').populate('comments')
-            .then(posts => res.json({ posts }))
-            .catch(err => console.error(err))
-        }
-    });
-};
+exports.post_all_get = [
+    verifyToken,
+    (req, res) => {
+        jwt.verify(req.token, 'secretKey', (err, authData) => {
+            if (err) {
+                console.log(authData)
+                console.log('no auth. token; ', req.token)
+                Post.find({published: true}).populate('author').populate('comments')
+                .then(posts => {
+                    res.json({ posts })
+                })
+                .catch(err => console.error(err))
+            } else {
+                console.log('with auth. token: ',req.token)
+                Post.find().populate('author').populate('comments')
+                .then(posts => res.json({ posts }))
+                .catch(err => console.error(err))
+            }
+        });
+    }
+]
 
 exports.post_new_get = (req, res) => {
-    res.json({ message: 'new post get request' });
+    res.sendStatus(304);
 };
 
 exports.post_new_post = [

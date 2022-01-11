@@ -2,7 +2,7 @@ const User = require('../models/user');
 const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken')
 
-exports.logout_get = (req, res) => {
+exports.logout_post = (req, res) => {
     res.json({message: 'success'});
 }
 
