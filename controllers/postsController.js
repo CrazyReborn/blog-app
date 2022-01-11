@@ -8,15 +8,12 @@ exports.post_all_get = [
     (req, res) => {
         jwt.verify(req.token, 'secretKey', (err, authData) => {
             if (err) {
-                console.log(authData)
-                console.log('no auth. token; ', req.token)
                 Post.find({published: true}).populate('author').populate('comments')
                 .then(posts => {
                     res.json({ posts })
                 })
                 .catch(err => console.error(err))
             } else {
-                console.log('with auth. token: ',req.token)
                 Post.find().populate('author').populate('comments')
                 .then(posts => res.json({ posts }))
                 .catch(err => console.error(err))
@@ -26,7 +23,7 @@ exports.post_all_get = [
 ]
 
 exports.post_new_get = (req, res) => {
-    res.sendStatus(304);
+    res.sendStatus(200);
 };
 
 exports.post_new_post = [
@@ -86,17 +83,24 @@ exports.post_put = [
 
         const post = new Post({
             _id: req.params.id,
+            author: '61d159657ab36e7f277ee8d1', //change to use req.user probably?
             text: req.body.text,
-            date: Date.now()
+            date: Date.now(),
+            title: req.body.title,
+            published: req.body.published,
+            comments: req.body.comments
         });
         
         if (!errors.isEmpty()) {
             res.json({errors});
         }
         else {
-            Post.findByIdAndUpdate(req.params.id, post, {})
-            .then(() => res.redirect('/api/'))
-            .catch(err => res.json({err}));
+            jwt.verify(req.token, 'secretKey', (err) => {
+                Post.findByIdAndUpdate(req.params.id, post, {})
+                .then(() => res.json({success: 'success'}))
+                .catch(errors => res.json({errors}));
+            })
+            
         }
     }
 ]
