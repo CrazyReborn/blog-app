@@ -14,7 +14,7 @@ router.get('/api/posts/:id', post_controller.post_get);
 router.put('/api/posts/:id', post_controller.post_put);
 router.delete('/api/posts/:id', post_controller.post_delete);
 
-router.get('/api/login', user_controller.login_get);
+router.get('/api/logout', user_controller.logout_get);
 router.post('/api/login', user_controller.login_post);
 
 router.post('/api/posts/:id/comment', comment_controller.comment_post)

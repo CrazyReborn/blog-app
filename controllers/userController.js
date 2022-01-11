@@ -2,8 +2,8 @@ const User = require('../models/user');
 const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken')
 
-exports.login_get = (req, res) => {
-    res.send('login get success');
+exports.logout_get = (req, res) => {
+    res.json({message: 'success'});
 }
 
 exports.login_post = [
@@ -16,21 +16,20 @@ exports.login_post = [
         if (!errors.isEmpty()) {
             res.json({ errors })
         } else {
-            User.findOne({username: req.body.username, password: req.body.password})
-            .exec((err, user) => {
+            User.findOne({username: req.body.username, password: req.body.password}, (err, user) => {
                 if (err) {
-                    res.json({err})
+                    res.json({errors: [err]});
                 } 
-                if (user == null) {
-                    res.json({ message: 'no user found' })
+                else if (user == null) {
+                    res.json({ errors: [{msg: 'imcorrect username or password'}]});
                 }
                 else {
                     jwt.sign({user}, 'secretKey', (err, token) => {
                         if (err) {
-                            res.json({err})
+                            res.json({errors: [err]});
                         }
                         else {
-                            res.json({token})
+                            res.json({token});
                         }
                     })
                 }
