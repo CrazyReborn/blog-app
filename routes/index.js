@@ -8,6 +8,7 @@ const comment_controller = require('../controllers/commentController');
 router.get('/api/', post_controller.post_all_get);
 router.post('/api/', post_controller.post_new_post);
 
+//GET API KEY
 
 //GET A POST OR UPDATE OR DELETE
 router.get('/api/posts/:id', post_controller.post_get);

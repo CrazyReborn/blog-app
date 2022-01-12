@@ -2,6 +2,7 @@ const Post = require('../models/post');
 const {body, validationResult} = require('express-validator');
 const jwt = require('jsonwebtoken');
 const async = require('async');
+require('dotenv').config();
 
 exports.post_all_get = [
     verifyToken,
@@ -83,9 +84,9 @@ exports.post_put = [
 
         const post = new Post({
             _id: req.params.id,
-            author: '61d159657ab36e7f277ee8d1', //change to use req.user probably?
+            author: req.params.author, //change to use req.user probably?
             text: req.body.text,
-            date: Date.now(),
+            date: req.body.date,
             title: req.body.title,
             published: req.body.published,
             comments: req.body.comments
