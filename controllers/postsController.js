@@ -2,6 +2,7 @@ const Post = require('../models/post');
 const {body, validationResult} = require('express-validator');
 const jwt = require('jsonwebtoken');
 const async = require('async');
+const sanitizeHtml = require('sanitize-html');
 require('dotenv').config();
 
 exports.post_all_get = [
@@ -32,12 +33,12 @@ exports.post_new_post = [
     verifyToken,
     (req, res) => {
         const errors = validationResult(req);
-
+        const cleanText = sanitizeHtml(req.body.text);
         const post = new Post({
             //need to change to get user id from req object
             author: '61d159657ab36e7f277ee8d1',
             title: req.body.title,
-            text: req.body.text,
+            text: cleanText,
             date: Date.now(),
             comments:[],
             published: false
@@ -77,15 +78,16 @@ exports.post_get = (req, res, next) => {
 }
 
 exports.post_put = [
-    body('text', 'Post should not be empty').trim().isLength({min:1}).escape(),
+    body('text', 'Post should not be empty').trim().isLength({min:1}),
     verifyToken,
     (req, res) => {
         const errors = validationResult(req);
 
+        const cleanText = sanitizeHtml(req.body.text);
         const post = new Post({
             _id: req.params.id,
             author: req.params.author, //change to use req.user probably?
-            text: req.body.text,
+            text: cleanText,
             date: req.body.date,
             title: req.body.title,
             published: req.body.published,
