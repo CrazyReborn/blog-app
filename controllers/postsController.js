@@ -29,7 +29,7 @@ exports.post_new_get = (req, res) => {
 };
 
 exports.post_new_post = [
-    body('text', 'Post should not be empty').trim().isLength({min:1}).escape(),
+    body('text', 'Post should not be empty').trim().isLength({min:1}),
     verifyToken,
     (req, res) => {
         const errors = validationResult(req);
@@ -53,7 +53,7 @@ exports.post_new_post = [
                 } else {
                     post.save()
                     //make it redirect somewhere
-                    .then(() => res.json({ message: 'success', authData }))
+                    .then(() => res.json({ id: post._id }))
                     .catch(err => res.json({err}))
                 }
             })
