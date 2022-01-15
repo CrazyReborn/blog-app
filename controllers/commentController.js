@@ -36,3 +36,15 @@ exports.comment_post = [
         }
     }
 ];
+
+exports.comment_delete = (req, res, next) => {
+    Comment.findByIdAndRemove(req.params.id, (err, comment) => {
+        if (err) {
+            next(err);
+        } else if(comment == null) {
+            res.sendStatus(404)
+        } else {
+            res.sendStatus(200)
+        }
+    })
+}

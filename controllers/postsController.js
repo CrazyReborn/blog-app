@@ -110,7 +110,7 @@ exports.post_put = [
 
 exports.post_delete = (req, res) => {
     Post.findByIdAndRemove(req.params.id)
-    .then(() => res.redirect('/'))
+    .then(() => res.json({success: 'success'}))
     .catch(err => res.json({err}));
 }
 
