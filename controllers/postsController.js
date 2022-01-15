@@ -5,6 +5,18 @@ const async = require('async');
 const sanitizeHtml = require('sanitize-html');
 require('dotenv').config();
 
+const verifyToken = (req, res, next) => {
+    const bearerHeader = req.headers['authorization'];
+    if (typeof bearerHeader !== 'undefined') {
+        const bearer = bearerHeader.split(' ');
+        const bearerToken = bearer[1];
+        req.token = bearerToken;
+        next();
+    } else {
+        res.sendStatus(403)
+    }
+}
+
 exports.post_all_get = [
     verifyToken,
     (req, res) => {
@@ -112,17 +124,4 @@ exports.post_delete = (req, res) => {
     Post.findByIdAndRemove(req.params.id)
     .then(() => res.json({success: 'success'}))
     .catch(err => res.json({err}));
-}
-
-function verifyToken(req, res, next) {
-    const bearerHeader = req.headers['authorization'];
-    if (typeof bearerHeader !== 'undefined') {
-        const bearer = bearerHeader.split(' ');
-        const bearerToken = bearer[1];
-        req.token = bearerToken;
-        next();
-    } else {
-        res.sendStatus(403)
-    }
-
 }

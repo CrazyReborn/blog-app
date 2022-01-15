@@ -18,7 +18,8 @@ router.delete('/api/posts/:id', post_controller.post_delete);
 router.post('/api/logout', user_controller.logout_post);
 router.post('/api/login', user_controller.login_post);
 
-router.post('/api/posts/:id/comment', comment_controller.comment_post)
-router.delete('/api/comments/:id', comment_controller.comment_delete)
+router.post('/api/posts/:id/comment', comment_controller.comment_post);
+router.put('/api/comments/:id', comment_controller.comment_put);
+router.delete('/api/comments/:id', comment_controller.comment_delete);
 
 module.exports = router
